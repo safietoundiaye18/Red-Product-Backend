@@ -3,10 +3,42 @@ const Hotel = require('../models/Hotel');
 // Récupérer tous les hôtels
 exports.obtenirHotels = async (req, res) => {
   try {
-    const hotels = await Hotel.find({ actif: true });
+    // Pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Recherche
+    const search = req.query.search || '';
+    const filtres = { actif: true };
+    if (search) {
+      filtres.$or = [
+        { nom: { $regex: search, $options: 'i' } },
+        { ville: { $regex: search, $options: 'i' } },
+        { adresse: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // Tri
+    const tri = req.query.tri || 'createdAt';
+    const ordre = req.query.ordre === 'asc' ? 1 : -1;
+    const triOption = { [tri]: ordre };
+
+    // Récupérer les hôtels
+    const hotels = await Hotel.find(filtres)
+      .sort(triOption)
+      .skip(skip)
+      .limit(limit);
+
+    // Compter le total
+    const total = await Hotel.countDocuments(filtres);
+
     res.status(200).json({
       succes: true,
       nombre: hotels.length,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
       hotels
     });
   } catch (erreur) {
@@ -156,4 +188,45 @@ runValidators: true → vérifie les règles du modèle même lors d'une modific
 findByIdAndDelete → trouve et supprime en une seule opération
 
 const image = req.file ? req.file.path : undefined;
+
+
+Explication :
+
+req.query.page → récupère le numéro de page dans l'URL
+req.query.limit → récupère le nombre d'hôtels par page
+skip → calcule combien d'hôtels sauter. Page 2 avec 10 par page → skip 10
+$regex → recherche dans MongoDB comme un LIKE en SQL
+$options: 'i' → recherche insensible à la casse (Dakar = dakar = DAKAR)
+$or → cherche dans plusieurs champs en même temps
+sort() → trie les résultats
+skip() → saute les premiers résultats
+limit() → limite le nombre de résultats
+pages: Math.ceil(total / limit) → calcule le nombre total de pages
+
+
+Ces endpoints viennent de l'URL que le frontend va envoyer.
+Ce sont des query parameters (paramètres de requête). Ils se mettent après le ? dans l'URL.
+
+D'où viennent-ils ?
+On les a définis nous-mêmes dans le controller avec req.query :
+jsconst page = parseInt(req.query.page) || 1;
+const limit = parseInt(req.query.limit) || 10;
+const search = req.query.search || '';
+const tri = req.query.tri || 'createdAt';
+const ordre = req.query.ordre === 'asc' ? 1 : -1;
+
+Comment ça marche ?
+Quand le frontend appelle :
+GET /api/hotels?page=2&limit=5&search=Dakar&tri=prixParNuit&ordre=asc
+Express décompose automatiquement l'URL et met dans req.query :
+jsreq.query = {
+  page: "2",
+  limit: "5",
+  search: "Dakar",
+  tri: "prixParNuit",
+  ordre: "asc"
+}
+
+En résumé :
+ParamètreRôleExemplepageNuméro de page?page=2limitHôtels par page?limit=5searchRecherche par mot?search=DakartriChamp de tri?tri=prixParNuitordreSens du tri?ordre=asc
 */
