@@ -157,7 +157,7 @@ exports.motDePasseOublie = async (req, res) => {
     await utilisateur.save();
 
     // Créer le lien de réinitialisation
-    const lien = `http://localhost:3000/reset-password.html?token=${token}`;
+    const lien = `http://127.0.0.1:5501/reinitialisé.html?token=${token}`;
 
     // Envoyer l'email
     await transporter.sendMail({
