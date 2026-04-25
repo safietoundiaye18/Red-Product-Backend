@@ -7,15 +7,15 @@ const {
   modifierHotel,
   supprimerHotel
 } = require('../controllers/hotel.controller');
-const { proteger, autoriser } = require('../middleware/auth');
+const { proteger } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
-// Routes publiques
-router.get('/', obtenirHotels);
-router.get('/:id', obtenirHotel);
+// Toutes les routes sont protégées
+router.get('/', proteger, obtenirHotels);
+router.get('/:id', proteger, obtenirHotel);
 
 // Routes admin seulement
-router.post('/', proteger, autoriser('admin'), (req, res, next) => {
+router.post('/', proteger, (req, res, next) => {
   upload.single('image')(req, res, (err) => {
     if (err) return res.status(400).json({ succes: false, message: err.message });
     next();
@@ -29,6 +29,6 @@ router.put('/:id', proteger, autoriser('admin'), (req, res, next) => {
   });
 }, modifierHotel);
 
-router.delete('/:id', proteger, autoriser('admin'), supprimerHotel);
+router.delete('/:id', proteger, supprimerHotel);
 
 module.exports = router;

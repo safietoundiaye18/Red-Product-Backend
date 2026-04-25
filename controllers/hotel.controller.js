@@ -50,18 +50,43 @@ exports.obtenirHotels = async (req, res) => {
 };
 
 // Récupérer un hôtel par son ID
-exports.obtenirHotel = async (req, res) => {
+exports.obtenirHotels = async (req, res) => {
   try {
-    const hotel = await Hotel.findById(req.params.id);
-    if (!hotel) {
-      return res.status(404).json({
-        succes: false,
-        message: 'Hôtel introuvable'
-      });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+    const search = req.query.search || '';
+
+    // Filtrer par utilisateur connecté
+    const filtres = { 
+      actif: true,
+      creePar: req.user.id  // ← seulement ses hôtels
+    };
+
+    if (search) {
+      filtres.$or = [
+        { nom: { $regex: search, $options: 'i' } },
+        { adresse: { $regex: search, $options: 'i' } }
+      ];
     }
+
+    const tri = req.query.tri || 'createdAt';
+    const ordre = req.query.ordre === 'asc' ? 1 : -1;
+
+    const hotels = await Hotel.find(filtres)
+      .sort({ [tri]: ordre })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Hotel.countDocuments(filtres);
+
     res.status(200).json({
       succes: true,
-      hotel
+      nombre: hotels.length,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      hotels
     });
   } catch (erreur) {
     res.status(500).json({
