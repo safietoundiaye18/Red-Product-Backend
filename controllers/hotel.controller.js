@@ -1,55 +1,6 @@
 const Hotel = require('../models/Hotel');
 
-// Récupérer tous les hôtels
-exports.obtenirHotels = async (req, res) => {
-  try {
-    // Pagination
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-
-    // Recherche
-    const search = req.query.search || '';
-    const filtres = { actif: true };
-    if (search) {
-      filtres.$or = [
-        { nom: { $regex: search, $options: 'i' } },
-        { ville: { $regex: search, $options: 'i' } },
-        { adresse: { $regex: search, $options: 'i' } }
-      ];
-    }
-
-    // Tri
-    const tri = req.query.tri || 'createdAt';
-    const ordre = req.query.ordre === 'asc' ? 1 : -1;
-    const triOption = { [tri]: ordre };
-
-    // Récupérer les hôtels
-    const hotels = await Hotel.find(filtres)
-      .sort(triOption)
-      .skip(skip)
-      .limit(limit);
-
-    // Compter le total
-    const total = await Hotel.countDocuments(filtres);
-
-    res.status(200).json({
-      succes: true,
-      nombre: hotels.length,
-      total,
-      page,
-      pages: Math.ceil(total / limit),
-      hotels
-    });
-  } catch (erreur) {
-    res.status(500).json({
-      succes: false,
-      message: erreur.message
-    });
-  }
-};
-
-// Récupérer un hôtel par son ID
+// Récupérer tous les hôtels (seulement ceux de l'utilisateur connecté)
 exports.obtenirHotels = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -57,10 +8,9 @@ exports.obtenirHotels = async (req, res) => {
     const skip = (page - 1) * limit;
     const search = req.query.search || '';
 
-    // Filtrer par utilisateur connecté
     const filtres = { 
       actif: true,
-      creePar: req.user.id  // ← seulement ses hôtels
+      creePar: req.user.id
     };
 
     if (search) {
@@ -96,12 +46,32 @@ exports.obtenirHotels = async (req, res) => {
   }
 };
 
+// Récupérer un hôtel par son ID
+exports.obtenirHotel = async (req, res) => {
+  try {
+    const hotel = await Hotel.findById(req.params.id);
+    if (!hotel) {
+      return res.status(404).json({
+        succes: false,
+        message: 'Hôtel introuvable'
+      });
+    }
+    res.status(200).json({
+      succes: true,
+      hotel
+    });
+  } catch (erreur) {
+    res.status(500).json({
+      succes: false,
+      message: erreur.message
+    });
+  }
+};
+
 // Créer un hôtel
 exports.creerHotel = async (req, res) => {
   try {
     const { nom, adresse, email, telephone, prixParNuit, devise } = req.body;
-
-    // Récupérer l'image si elle existe
     const image = req.file ? req.file.path : null;
 
     const hotel = new Hotel({
@@ -133,20 +103,12 @@ exports.creerHotel = async (req, res) => {
 exports.modifierHotel = async (req, res) => {
   try {
     const { nom, adresse, email, prixParNuit, telephone, devise } = req.body;
-
-    // Récupérer la nouvelle image si elle existe
-   const image = req.file ? req.file.path : undefined;
+    const image = req.file ? req.file.path : undefined;
 
     const donneesAMettreAJour = {
-      nom,
-      adresse,
-      email,
-      telephone,
-      prixParNuit,
-      devise
+      nom, adresse, email, telephone, prixParNuit, devise
     };
 
-    // Ajouter l'image seulement si une nouvelle a été uploadée
     if (image) donneesAMettreAJour.image = image;
 
     const hotel = await Hotel.findByIdAndUpdate(
@@ -197,7 +159,6 @@ exports.supprimerHotel = async (req, res) => {
     });
   }
 };
-
 
 /*
 
