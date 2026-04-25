@@ -11,8 +11,8 @@ const { proteger } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
 // Toutes les routes sont protégées
-router.get('/', proteger, obtenirHotels);
-router.get('/:id', proteger, obtenirHotel);
+router.get('/', obtenirHotels);
+router.get('/:id', obtenirHotel);
 
 router.post('/', proteger, (req, res, next) => {
   upload.single('image')(req, res, (err) => {
