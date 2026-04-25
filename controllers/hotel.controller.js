@@ -21,7 +21,7 @@ exports.obtenirHotels = async (req, res) => {
     }
 
     const tri = req.query.tri || 'createdAt';
-    const ordre = req.query.ordre === 'desc' ? 1 : -1;
+    const ordre = req.query.ordre === 'asc' ? 1 : -1;
 
     const hotels = await Hotel.find(filtres)
       .sort({ [tri]: ordre })
