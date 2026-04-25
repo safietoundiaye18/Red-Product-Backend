@@ -14,7 +14,6 @@ const upload = require('../middleware/upload');
 router.get('/', proteger, obtenirHotels);
 router.get('/:id', proteger, obtenirHotel);
 
-// Routes admin seulement
 router.post('/', proteger, (req, res, next) => {
   upload.single('image')(req, res, (err) => {
     if (err) return res.status(400).json({ succes: false, message: err.message });
@@ -22,7 +21,7 @@ router.post('/', proteger, (req, res, next) => {
   });
 }, creerHotel);
 
-router.put('/:id', proteger, autoriser('admin'), (req, res, next) => {
+router.put('/:id', proteger, (req, res, next) => {
   upload.single('image')(req, res, (err) => {
     if (err) return res.status(400).json({ succes: false, message: err.message });
     next();

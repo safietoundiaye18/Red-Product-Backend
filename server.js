@@ -11,6 +11,9 @@ const connecterDB = require('./config/db');
 
 const app = express();
 
+// Trust proxy pour Render
+app.set('trust proxy', 1);
+
 // Connexion à MongoDB
 connecterDB();
 
