@@ -10,7 +10,7 @@ exports.obtenirHotels = async (req, res) => {
 
     const filtres = { 
       actif: true,
-      creePar: req.user.id
+      // creePar: req.user.id
     };
 
     if (search) {
