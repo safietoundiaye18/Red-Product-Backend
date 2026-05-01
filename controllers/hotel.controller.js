@@ -4,14 +4,15 @@ const Hotel = require('../models/Hotel');
 exports.obtenirHotels = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
+    const limit = parseInt(req.query.limit) || 8;
     const skip = (page - 1) * limit;
     const search = req.query.search || '';
 
-    const filtres = { 
-      actif: true,
-      // creePar: req.user.id
-    };
+    // Si admin → voit tout, sinon → voit seulement ses hôtels
+    const filtres = { actif: true };
+    if (req.user.role !== 'admin') {
+      filtres.creePar = req.user.id;
+    }
 
     if (search) {
       filtres.$or = [
