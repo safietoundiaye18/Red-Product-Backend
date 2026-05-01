@@ -43,6 +43,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/hotels', require('./routes/hotel.routes'));
 app.use('/api/dashboard', require('./routes/dashboard.routes'));
+app.use('/api/users', require('./routes/user.routes'));
 
 // Route de test
 app.get('/', (req, res) => {
@@ -68,7 +69,7 @@ app.use((req, res) => {
 });
 
 
-app.use('/api/users', require('./routes/user.routes'));
+
 
 // Démarrer le serveur
 const PORT = process.env.PORT || 5000;
