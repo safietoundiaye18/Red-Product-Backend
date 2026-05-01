@@ -2,7 +2,9 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const transporter = require('../config/email');
+const resend = require('../config/email');
+
+
 
 // Fonction pour générer un token JWT
 const genererToken = (id) => {
@@ -160,20 +162,17 @@ exports.motDePasseOublie = async (req, res) => {
     const lien = `http://127.0.0.1:5501/reinitialiser.html?token=${token}`;
 
     // Envoyer l'email
-    await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
+    // Dans la fonction motDePasseOublie
+    await resend.emails.send({
+      from: 'RED PRODUCT <onboarding@resend.dev>',
       to: utilisateur.email,
       subject: 'Réinitialisation de votre mot de passe - RED PRODUCT',
       html: `
         <h2>Bonjour ${utilisateur.nom}</h2>
         <p>Vous avez demandé à réinitialiser votre mot de passe.</p>
-        <p>Cliquez sur le lien ci-dessous pour créer un nouveau mot de passe :</p>
-        <a href="${lien}" style="background: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-          Réinitialiser mon mot de passe
-        </a>
-        <p>Ce lien expire dans <strong>10 minutes</strong>.</p>
-        <p>Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
-      `
+        <a href="${lien}">Réinitialiser mon mot de passe</a>
+        <p>Ce lien expire dans 10 minutes.</p>
+    `
     });
 
     res.status(200).json({
