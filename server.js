@@ -68,6 +68,8 @@ app.use((req, res) => {
 });
 
 
+app.use('/api/users', require('./routes/user.routes'));
+
 // Démarrer le serveur
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
