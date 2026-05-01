@@ -159,7 +159,7 @@ exports.motDePasseOublie = async (req, res) => {
     await utilisateur.save();
 
     // Créer le lien de réinitialisation
-const lien = `https://votre-frontend.vercel.app/reinitialiser.html?token=${token}`;
+const lien = `https://red-product-one.vercel.app/reinitialiser.html?token=${token}`;
 
     // Envoyer l'email
     // Dans la fonction motDePasseOublie
