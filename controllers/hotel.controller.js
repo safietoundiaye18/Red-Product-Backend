@@ -83,7 +83,7 @@ exports.creerHotel = async (req, res) => {
       prixParNuit,
       devise,
       image,
-      // creePar: req.user.id
+      creePar: req.user.id
     });
 
     await hotel.save();
