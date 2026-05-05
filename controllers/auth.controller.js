@@ -29,25 +29,69 @@ exports.inscrire = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const motDePasseChiffre = await bcrypt.hash(motDePasse, salt);
 
+    const tokenActivation = crypto.randomBytes(32).toString('hex');
+
     const utilisateur = new User({
       nom,
       email,
-      motDePasse: motDePasseChiffre
+      motDePasse: motDePasseChiffre,
+      estActif: false,
+      tokenActivation
     });
     await utilisateur.save();
 
-    const token = genererToken(utilisateur._id);
+    const lien = `https://red-product-backend-z5lx.onrender.com/api/auth/activer/${tokenActivation}`;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: utilisateur.email,
+      subject: 'Activez votre compte - RED PRODUCT',
+      html: `
+        <h2>Bonjour ${utilisateur.nom} !</h2>
+        <p>Merci de vous être inscrit sur RED PRODUCT.</p>
+        <p>Cliquez sur le bouton ci-dessous pour activer votre compte :</p>
+        <a href="${lien}" style="background: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 0;">
+          Activer mon compte
+        </a>
+        <p>Si vous n'avez pas créé de compte, ignorez cet email.</p>
+      `
+    });
 
     res.status(201).json({
       succes: true,
-      token,
-      utilisateur: {
-        id: utilisateur._id,
-        nom: utilisateur.nom,
-        email: utilisateur.email,
-        role: utilisateur.role
-      }
+      message: 'Inscription réussie ! Vérifiez votre email pour activer votre compte.'
     });
+  } catch (erreur) {
+    res.status(500).json({
+      succes: false,
+      message: erreur.message
+    });
+  }
+};
+
+
+exports.activerCompte = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    // Chercher l'utilisateur avec ce token
+    const utilisateur = await User.findOne({ tokenActivation: token });
+
+    if (!utilisateur) {
+      return res.status(400).json({
+        succes: false,
+        message: 'Token d\'activation invalide ou déjà utilisé'
+      });
+    }
+
+    // Activer le compte
+    utilisateur.estActif = true;
+    utilisateur.tokenActivation = null;
+    await utilisateur.save();
+
+    // Rediriger vers la page de connexion avec message de succès
+    res.redirect(`https://red-product-one.vercel.app/index.html?activated=true`);
+
   } catch (erreur) {
     res.status(500).json({
       succes: false,
@@ -73,6 +117,13 @@ exports.connecter = async (req, res) => {
       return res.status(401).json({
         succes: false,
         message: 'Email ou mot de passe incorrect'
+      });
+    }
+
+      if (!utilisateur.estActif) {
+      return res.status(401).json({
+        succes: false,
+        message: 'Veuillez activer votre compte. Vérifiez votre email.'
       });
     }
 
@@ -159,7 +210,7 @@ exports.motDePasseOublie = async (req, res) => {
     await utilisateur.save();
 
     // Créer le lien de réinitialisation
-const lien = `https://red-product-one.vercel.app/reinitialiser.html?token=${token}`;
+    const lien = `https://red-product-one.vercel.app/reinitialiser.html?token=${token}`;
 
     // Envoyer l'email
     // Dans la fonction motDePasseOublie

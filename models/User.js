@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'user'],
     default: 'admin'
   },
-   tokenReinitialisation: {
+  tokenReinitialisation: {
     type: String,
     default: null
   },
@@ -34,7 +34,15 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: null
-}
+  },
+  estActif: { 
+    type: Boolean, 
+    default: false 
+  }, 
+  tokenActivation: { 
+    type: String, 
+    default: null 
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { inscrire, connecter, moi, deconnecter, motDePasseOublie, reinitialiserMotDePasse } = require('../controllers/auth.controller');
+const { inscrire, connecter, moi, deconnecter, motDePasseOublie, reinitialiserMotDePasse,activerCompte } = require('../controllers/auth.controller');
 const { proteger } = require('../middleware/auth');
 
 // Route inscription
 router.post('/inscription', inscrire);
+
+// Route activation compte
+router.get('/activer/:token', activerCompte);
 
 // Route connexion
 router.post('/connexion', connecter);
