@@ -42,11 +42,11 @@ exports.inscrire = async (req, res) => {
 
     const lien = `https://red-product-backend-z5lx.onrender.com/api/auth/activer/${tokenActivation}`;
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
-      to: utilisateur.email,
-      subject: 'Activez votre compte - RED PRODUCT',
-      html: `
+   await resend.emails.send({
+    from: 'RED PRODUCT <onboarding@resend.dev>',
+    to: utilisateur.email,
+    subject: 'Activez votre compte - RED PRODUCT',
+    html: `
         <h2>Bonjour ${utilisateur.nom} !</h2>
         <p>Merci de vous être inscrit sur RED PRODUCT.</p>
         <p>Cliquez sur le bouton ci-dessous pour activer votre compte :</p>
@@ -54,8 +54,8 @@ exports.inscrire = async (req, res) => {
           Activer mon compte
         </a>
         <p>Si vous n'avez pas créé de compte, ignorez cet email.</p>
-      `
-    });
+    `
+});
 
     res.status(201).json({
       succes: true,
@@ -120,7 +120,7 @@ exports.connecter = async (req, res) => {
       });
     }
 
-      if (!utilisateur.estActif) {
+    if (!utilisateur.estActif) {
       return res.status(401).json({
         succes: false,
         message: 'Veuillez activer votre compte. Vérifiez votre email.'
