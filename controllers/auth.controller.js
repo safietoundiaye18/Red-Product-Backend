@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const resend = require('../config/email');
-
+const brevo = require('../config/brevo'); 
 
 
 // Fonction pour générer un token JWT
@@ -42,8 +42,8 @@ exports.inscrire = async (req, res) => {
 
     const lien = `https://red-product-backend-z5lx.onrender.com/api/auth/activer/${tokenActivation}`;
 
-   await resend.emails.send({
-    from: 'RED PRODUCT <onboarding@resend.dev>',
+   await brevo.sendMail({
+    from: process.env.EMAIL_FROM,
     to: utilisateur.email,
     subject: 'Activez votre compte - RED PRODUCT',
     html: `
