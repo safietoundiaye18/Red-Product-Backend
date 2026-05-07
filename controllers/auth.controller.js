@@ -47,13 +47,65 @@ exports.inscrire = async (req, res) => {
     to: utilisateur.email,
     subject: 'Activez votre compte - RED PRODUCT',
     html: `
-        <h2>Bonjour ${utilisateur.nom} !</h2>
-        <p>Merci de vous être inscrit sur RED PRODUCT.</p>
-        <p>Cliquez sur le bouton ci-dessous pour activer votre compte :</p>
-        <a href="${lien}" style="background: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 0;">
-          Activer mon compte
-        </a>
-        <p>Si vous n'avez pas créé de compte, ignorez cet email.</p>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+        
+        <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            
+            <!-- Header -->
+            <div style="background-color: #333333; padding: 30px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;">RED PRODUCT</h1>
+                <p style="color: #ffd700; margin: 5px 0 0; font-size: 14px;">Gestion d'hôtels</p>
+            </div>
+
+            <!-- Body -->
+            <div style="padding: 40px 30px;">
+                <h2 style="color: #333333; margin-top: 0;">Bonjour ${utilisateur.nom} ! 👋</h2>
+                
+                <p style="color: #666666; line-height: 1.6; font-size: 15px;">
+                    Merci de vous être inscrit sur <strong>RED PRODUCT</strong>. 
+                    Votre compte a été créé avec succès.
+                </p>
+
+                <p style="color: #666666; line-height: 1.6; font-size: 15px;">
+                    Pour commencer à utiliser votre compte, veuillez l'activer en cliquant sur le bouton ci-dessous :
+                </p>
+
+                <!-- Button -->
+                <div style="text-align: center; margin: 35px 0;">
+                    <a href="${lien}" 
+                       style="background-color: #333333; color: #ffffff; padding: 14px 35px; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold; display: inline-block; letter-spacing: 1px;">
+                        ✅ Activer mon compte
+                    </a>
+                </div>
+
+                <!-- Warning -->
+                <div style="background-color: #fff8e1; border-left: 4px solid #ffd700; padding: 15px; border-radius: 4px; margin: 20px 0;">
+                    <p style="margin: 0; color: #666666; font-size: 14px;">
+                        ⚠️ Si vous n'avez pas créé de compte sur RED PRODUCT, ignorez cet email. Votre adresse email ne sera pas utilisée.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="background-color: #f8f8f8; padding: 20px 30px; text-align: center; border-top: 1px solid #eeeeee;">
+                <p style="color: #999999; font-size: 12px; margin: 0;">
+                    © 2026 RED PRODUCT. Tous droits réservés.
+                </p>
+                <p style="color: #999999; font-size: 12px; margin: 5px 0 0;">
+                    Cet email a été envoyé automatiquement, merci de ne pas y répondre.
+                </p>
+            </div>
+
+        </div>
+
+    </body>
+    </html>
     `
 });
 
