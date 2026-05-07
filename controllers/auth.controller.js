@@ -42,84 +42,67 @@ exports.inscrire = async (req, res) => {
 
     const lien = `https://red-product-backend-z5lx.onrender.com/api/auth/activer/${tokenActivation}`;
 
-    await resend.emails.send({
-      from: 'RED PRODUCT <onboarding@resend.dev>',
-      to: utilisateur.email,
-      subject: 'Activez votre compte - RED PRODUCT',
-      html: `
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
-    <tr>
-      <td align="center">
+    html: `
+<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f4f4f4" style="padding: 40px 0;">
+  <tr>
+    <td align="center">
+      <table width="500" cellpadding="30" cellspacing="0" bgcolor="#ffffff" style="border: 1px solid #dddddd;">
+        
+        <!-- Header rouge -->
+        <tr>
+          <td align="center" bgcolor="#dc2626" style="padding: 30px;">
+            <h1 style="color: #ffffff; font-family: Arial, sans-serif; font-size: 24px; margin: 0;">
+              RED PRODUCT
+            </h1>
+          </td>
+        </tr>
 
-        <table width="500" cellpadding="0" cellspacing="0" style="
-          background:white;
-          padding:40px;
-          border-radius:10px;
-        ">
-          
-          <tr>
-            <td align="center">
-              <h1 style="
-                color:#111827;
-                font-family:Arial,sans-serif;
-                font-size:28px;
-                margin-bottom:20px;
-              ">
-                Bonjour ${utilisateur.nom} 👋
-              </h1>
+        <!-- Corps -->
+        <tr>
+          <td align="center" style="padding: 40px 30px;">
+            <h2 style="color: #111827; font-family: Arial, sans-serif; font-size: 22px; margin: 0 0 20px 0;">
+              Bonjour ${utilisateur.nom} 👋
+            </h2>
 
-              <p style="
-                color:#4b5563;
-                font-family:Arial,sans-serif;
-                font-size:16px;
-                line-height:1.6;
-              ">
-                Merci de vous être inscrit sur 
-                <strong>RED PRODUCT</strong>.
-              </p>
+            <p style="color: #4b5563; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; margin: 0 0 15px 0;">
+              Merci de vous être inscrit sur <strong>RED PRODUCT</strong>.
+            </p>
 
-              <p style="
-                color:#4b5563;
-                font-family:Arial,sans-serif;
-                font-size:16px;
-                line-height:1.6;
-                margin-bottom:30px;
-              ">
-                Cliquez sur le bouton ci-dessous pour activer votre compte.
-              </p>
+            <p style="color: #4b5563; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
+              Cliquez sur le bouton ci-dessous pour activer votre compte.
+            </p>
 
-              <a href="${lien}" style="
-                background:#dc2626;
-                color:white;
-                text-decoration:none;
-                padding:14px 28px;
-                border-radius:6px;
-                display:inline-block;
-                font-family:Arial,sans-serif;
-                font-weight:bold;
-              ">
-                Activer mon compte
-              </a>
+            <!-- Bouton -->
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" bgcolor="#dc2626" style="padding: 14px 28px;">
+                  <a href="${lien}" style="color: #ffffff; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; font-size: 16px;">
+                    Activer mon compte
+                  </a>
+                </td>
+              </tr>
+            </table>
 
-              <p style="
-                margin-top:30px;
-                color:#9ca3af;
-                font-size:14px;
-                font-family:Arial,sans-serif;
-              ">
-                Si vous n'avez pas créé de compte, ignorez cet email.
-              </p>
+            <p style="color: #9ca3af; font-family: Arial, sans-serif; font-size: 13px; margin: 30px 0 0 0;">
+              Si vous n'avez pas créé de compte, ignorez cet email.
+            </p>
+          </td>
+        </tr>
 
-            </td>
-          </tr>
+        <!-- Footer -->
+        <tr>
+          <td align="center" bgcolor="#f8f8f8" style="padding: 20px; border-top: 1px solid #eeeeee;">
+            <p style="color: #9ca3af; font-family: Arial, sans-serif; font-size: 12px; margin: 0;">
+              © 2026 RED PRODUCT. Tous droits réservés.
+            </p>
+          </td>
+        </tr>
 
-        </table>
-
-      </td>
-    </tr>
-  </table>
-  `
-    });
+      </table>
+    </td>
+  </tr>
+</table>
+`
     //   await resend.emails.send({
     //     from: 'RED PRODUCT <onboarding@resend.dev>',
     //     to: utilisateur.email,
