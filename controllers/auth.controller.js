@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const resend = require('../config/email');
-const brevo = require('../config/brevo'); 
+const brevo = require('../config/brevo');
 
 
 // Fonction pour générer un token JWT
@@ -42,94 +42,98 @@ exports.inscrire = async (req, res) => {
 
     const lien = `https://red-product-backend-z5lx.onrender.com/api/auth/activer/${tokenActivation}`;
 
-        await resend.emails.send({
+    await resend.emails.send({
       from: 'RED PRODUCT <onboarding@resend.dev>',
       to: utilisateur.email,
       subject: 'Activez votre compte - RED PRODUCT',
       html: `
-        <div style="
-          font-family: Arial, sans-serif;
-          background-color: #f4f4f4;
-          padding: 40px 20px;
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
+    <tr>
+      <td align="center">
+
+        <table width="500" cellpadding="0" cellspacing="0" style="
+          background:white;
+          padding:40px;
+          border-radius:10px;
         ">
           
-          <div style="
-            max-width: 500px;
-            margin: auto;
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            text-align: center;
-          ">
-            
-            <h1 style="
-              color: #111827;
-              margin-bottom: 20px;
-              font-size: 28px;
-            ">
-              Bonjour ${utilisateur.nom} 👋
-            </h1>
+          <tr>
+            <td align="center">
+              <h1 style="
+                color:#111827;
+                font-family:Arial,sans-serif;
+                font-size:28px;
+                margin-bottom:20px;
+              ">
+                Bonjour ${utilisateur.nom} 👋
+              </h1>
 
-            <p style="
-              color: #4b5563;
-              font-size: 16px;
-              line-height: 1.6;
-            ">
-              Merci de vous être inscrit sur <strong>RED PRODUCT</strong>.
-            </p>
+              <p style="
+                color:#4b5563;
+                font-family:Arial,sans-serif;
+                font-size:16px;
+                line-height:1.6;
+              ">
+                Merci de vous être inscrit sur 
+                <strong>RED PRODUCT</strong>.
+              </p>
 
-            <p style="
-              color: #4b5563;
-              font-size: 16px;
-              line-height: 1.6;
-              margin-bottom: 30px;
-            ">
-              Cliquez sur le bouton ci-dessous pour activer votre compte.
-            </p>
+              <p style="
+                color:#4b5563;
+                font-family:Arial,sans-serif;
+                font-size:16px;
+                line-height:1.6;
+                margin-bottom:30px;
+              ">
+                Cliquez sur le bouton ci-dessous pour activer votre compte.
+              </p>
 
-            <a 
-              href="${lien}"
-              style="
-                display: inline-block;
-                background-color: #dc2626;
-                color: white;
-                padding: 14px 28px;
-                border-radius: 8px;
-                text-decoration: none;
-                font-weight: bold;
-                font-size: 16px;
-              "
-            >
-              Activer mon compte
-            </a>
+              <a href="${lien}" style="
+                background:#dc2626;
+                color:white;
+                text-decoration:none;
+                padding:14px 28px;
+                border-radius:6px;
+                display:inline-block;
+                font-family:Arial,sans-serif;
+                font-weight:bold;
+              ">
+                Activer mon compte
+              </a>
 
-            <p style="
-              margin-top: 30px;
-              font-size: 14px;
-              color: #9ca3af;
-            ">
-              Si vous n'avez pas créé de compte, ignorez cet email.
-            </p>
+              <p style="
+                margin-top:30px;
+                color:#9ca3af;
+                font-size:14px;
+                font-family:Arial,sans-serif;
+              ">
+                Si vous n'avez pas créé de compte, ignorez cet email.
+              </p>
 
-          </div>
-        </div>
-      `
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+  `
     });
-//   await resend.emails.send({
-//     from: 'RED PRODUCT <onboarding@resend.dev>',
-//     to: utilisateur.email,
-//     subject: 'Activez votre compte - RED PRODUCT',
-//     html: `
-//         <h2">Bonjour ${utilisateur.nom} !</h2>
-//         <p>Merci de vous être inscrit sur RED PRODUCT.</p>
-//         <p>Cliquez sur le bouton ci-dessous pour activer votre compte :</p>
-//         <a href="${lien}" style="background: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 0;">
-//           Activer mon compte
-//         </a>
-//         <p>Si vous n'avez pas créé de compte, ignorez cet email.</p>
-//     `
-// });
+    //   await resend.emails.send({
+    //     from: 'RED PRODUCT <onboarding@resend.dev>',
+    //     to: utilisateur.email,
+    //     subject: 'Activez votre compte - RED PRODUCT',
+    //     html: `
+    //         <h2">Bonjour ${utilisateur.nom} !</h2>
+    //         <p>Merci de vous être inscrit sur RED PRODUCT.</p>
+    //         <p>Cliquez sur le bouton ci-dessous pour activer votre compte :</p>
+    //         <a href="${lien}" style="background: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 0;">
+    //           Activer mon compte
+    //         </a>
+    //         <p>Si vous n'avez pas créé de compte, ignorez cet email.</p>
+    //     `
+    // });
 
     res.status(201).json({
       succes: true,
