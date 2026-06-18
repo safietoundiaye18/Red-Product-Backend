@@ -1,9 +1,10 @@
+
 const nodemailer = require('nodemailer');
 
 const brevo = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
-  port: 465,
-  secure: true, // true pour port 465
+  port: 2525,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS

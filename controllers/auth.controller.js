@@ -5,7 +5,6 @@ const crypto = require('crypto');
 const resend = require('../config/email');
 const brevo = require('../config/brevo');
 
-
 // Fonction pour générer un token JWT
 const genererToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -42,13 +41,16 @@ exports.inscrire = async (req, res) => {
 
     const lien = `https://red-product-backend-z5lx.onrender.com/api/auth/activer/${tokenActivation}`;
 
-    html: `
+    try {
+      await brevo.sendMail({
+        from: process.env.EMAIL_FROM,
+        to: utilisateur.email,
+        subject: 'Activez votre compte - RED PRODUCT',
+        html: `
 <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f4f4f4" style="padding: 40px 0;">
   <tr>
     <td align="center">
       <table width="500" cellpadding="30" cellspacing="0" bgcolor="#ffffff" style="border: 1px solid #dddddd;">
-        
-        <!-- Header rouge -->
         <tr>
           <td align="center" bgcolor="#dc2626" style="padding: 30px;">
             <h1 style="color: #ffffff; font-family: Arial, sans-serif; font-size: 24px; margin: 0;">
@@ -56,23 +58,17 @@ exports.inscrire = async (req, res) => {
             </h1>
           </td>
         </tr>
-
-        <!-- Corps -->
         <tr>
           <td align="center" style="padding: 40px 30px;">
             <h2 style="color: #111827; font-family: Arial, sans-serif; font-size: 22px; margin: 0 0 20px 0;">
               Bonjour ${utilisateur.nom} 👋
             </h2>
-
             <p style="color: #4b5563; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; margin: 0 0 15px 0;">
               Merci de vous être inscrit sur <strong>RED PRODUCT</strong>.
             </p>
-
             <p style="color: #4b5563; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
               Cliquez sur le bouton ci-dessous pour activer votre compte.
             </p>
-
-            <!-- Bouton -->
             <table cellpadding="0" cellspacing="0">
               <tr>
                 <td align="center" bgcolor="#dc2626" style="padding: 14px 28px;">
@@ -82,14 +78,11 @@ exports.inscrire = async (req, res) => {
                 </td>
               </tr>
             </table>
-
             <p style="color: #9ca3af; font-family: Arial, sans-serif; font-size: 13px; margin: 30px 0 0 0;">
               Si vous n'avez pas créé de compte, ignorez cet email.
             </p>
           </td>
         </tr>
-
-        <!-- Footer -->
         <tr>
           <td align="center" bgcolor="#f8f8f8" style="padding: 20px; border-top: 1px solid #eeeeee;">
             <p style="color: #9ca3af; font-family: Arial, sans-serif; font-size: 12px; margin: 0;">
@@ -97,26 +90,16 @@ exports.inscrire = async (req, res) => {
             </p>
           </td>
         </tr>
-
       </table>
     </td>
   </tr>
 </table>
-`
-    //   await resend.emails.send({
-    //     from: 'RED PRODUCT <onboarding@resend.dev>',
-    //     to: utilisateur.email,
-    //     subject: 'Activez votre compte - RED PRODUCT',
-    //     html: `
-    //         <h2">Bonjour ${utilisateur.nom} !</h2>
-    //         <p>Merci de vous être inscrit sur RED PRODUCT.</p>
-    //         <p>Cliquez sur le bouton ci-dessous pour activer votre compte :</p>
-    //         <a href="${lien}" style="background: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 0;">
-    //           Activer mon compte
-    //         </a>
-    //         <p>Si vous n'avez pas créé de compte, ignorez cet email.</p>
-    //     `
-    // });
+        `
+      });
+      console.log('Email activation envoyé à :', utilisateur.email);
+    } catch (emailErreur) {
+      console.error('Erreur envoi email activation:', emailErreur);
+    }
 
     res.status(201).json({
       succes: true,
@@ -131,12 +114,11 @@ exports.inscrire = async (req, res) => {
   }
 };
 
-
+// Activer le compte
 exports.activerCompte = async (req, res) => {
   try {
     const { token } = req.params;
 
-    // Chercher l'utilisateur avec ce token
     const utilisateur = await User.findOne({ tokenActivation: token });
 
     if (!utilisateur) {
@@ -146,12 +128,10 @@ exports.activerCompte = async (req, res) => {
       });
     }
 
-    // Activer le compte
     utilisateur.estActif = true;
     utilisateur.tokenActivation = null;
     await utilisateur.save();
 
-    // Rediriger vers la page de connexion avec message de succès
     res.redirect(`https://red-product-one.vercel.app/index.html?activated=true`);
 
   } catch (erreur) {
@@ -233,7 +213,6 @@ exports.moi = async (req, res) => {
   }
 };
 
-
 // Déconnexion
 exports.deconnecter = async (req, res) => {
   try {
@@ -254,7 +233,6 @@ exports.motDePasseOublie = async (req, res) => {
   try {
     const { email } = req.body;
 
-    // Vérifier si l'utilisateur existe
     const utilisateur = await User.findOne({ email });
     if (!utilisateur) {
       return res.status(404).json({
@@ -263,19 +241,14 @@ exports.motDePasseOublie = async (req, res) => {
       });
     }
 
-    // Générer un token temporaire
     const token = crypto.randomBytes(32).toString('hex');
 
-    // Sauvegarder le token et son expiration (10 minutes)
     utilisateur.tokenReinitialisation = token;
     utilisateur.expirationToken = Date.now() + 10 * 60 * 1000;
     await utilisateur.save();
 
-    // Créer le lien de réinitialisation
     const lien = `https://red-product-one.vercel.app/reinitialiser.html?token=${token}`;
 
-    // Envoyer l'email
-    // Dans la fonction motDePasseOublie
     await resend.emails.send({
       from: 'RED PRODUCT <onboarding@resend.dev>',
       to: utilisateur.email,
@@ -285,7 +258,7 @@ exports.motDePasseOublie = async (req, res) => {
         <p>Vous avez demandé à réinitialiser votre mot de passe.</p>
         <a href="${lien}">Réinitialiser mon mot de passe</a>
         <p>Ce lien expire dans 10 minutes.</p>
-    `
+      `
     });
 
     res.status(200).json({
@@ -305,7 +278,6 @@ exports.reinitialiserMotDePasse = async (req, res) => {
   try {
     const { token, motDePasse } = req.body;
 
-    // Chercher l'utilisateur avec ce token non expiré
     const utilisateur = await User.findOne({
       tokenReinitialisation: token,
       expirationToken: { $gt: Date.now() }
@@ -318,11 +290,9 @@ exports.reinitialiserMotDePasse = async (req, res) => {
       });
     }
 
-    // Chiffrer le nouveau mot de passe
     const salt = await bcrypt.genSalt(10);
     utilisateur.motDePasse = await bcrypt.hash(motDePasse, salt);
 
-    // Supprimer le token
     utilisateur.tokenReinitialisation = null;
     utilisateur.expirationToken = null;
 
@@ -339,29 +309,3 @@ exports.reinitialiserMotDePasse = async (req, res) => {
     });
   }
 };
-
-
-
-/*
-Explication :
-
-genererToken → une fonction qu'on réutilise pour créer un token JWT avec l'ID de l'utilisateur dedans
-jwt.sign({ id }, secret, { expiresIn }) → crée le token qui expire après 7 jours
-req.body → contient les données envoyées par le frontend (nom, email, mot de passe)
-User.findOne({ email }) → cherche dans MongoDB si un utilisateur avec cet email existe déjà
-User.create() → crée et sauvegarde le nouvel utilisateur dans MongoDB. bcryptjs va automatiquement chiffrer le mot de passe grâce au modèle
-select('+motDePasse') → on avait mis select: false dans le modèle pour ne jamais renvoyer le mot de passe. Ici on le force car on en a besoin pour le comparer
-bcrypt.compare() → compare le mot de passe saisi avec le mot de passe chiffré dans la base
-res.status(201) → 201 veut dire "créé avec succès"
-res.status(401) → 401 veut dire "non autorisé"
-res.status(500) → 500 veut dire "erreur serveur"
-exports.moi → renvoie les infos de l'utilisateur actuellement connecté
-
-Explication :
-
-crypto.randomBytes(32) → génère un token aléatoire de 32 bytes, impossible à deviner
-Date.now() + 10 * 60 * 1000 → expiration dans 10 minutes en millisecondes
-transporter.sendMail → envoie l'email avec nodemailer
-$gt: Date.now() → MongoDB vérifie que le token n'est pas expiré. $gt veut dire "greater than" (supérieur à)
-tokenReinitialisation = null → après utilisation on supprime le token pour qu'il ne puisse pas être réutilisé
-*/
