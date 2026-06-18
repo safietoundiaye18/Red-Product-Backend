@@ -250,16 +250,76 @@ exports.motDePasseOublie = async (req, res) => {
     const lien = `https://red-product-one.vercel.app/reinitialiser.html?token=${token}`;
 
     await resend.emails.send({
-      from: 'RED PRODUCT <onboarding@resend.dev>',
-      to: utilisateur.email,
-      subject: 'Réinitialisation de votre mot de passe - RED PRODUCT',
-      html: `
-        <h2>Bonjour ${utilisateur.nom}</h2>
-        <p>Vous avez demandé à réinitialiser votre mot de passe.</p>
-        <a href="${lien}">Réinitialiser mon mot de passe</a>
-        <p>Ce lien expire dans 10 minutes.</p>
-      `
-    });
+  from: 'RED PRODUCT <onboarding@resend.dev>',
+  to: utilisateur.email,
+  subject: 'Réinitialisation de votre mot de passe - RED PRODUCT',
+  html: `
+<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f4f4f4" style="padding: 40px 0;">
+  <tr>
+    <td align="center">
+      <table width="500" cellpadding="30" cellspacing="0" bgcolor="#ffffff" style="border: 1px solid #dddddd;">
+        
+        <!-- Header -->
+        <tr>
+          <td align="center" bgcolor="#333333" style="padding: 30px;">
+            <h1 style="color: #ffffff; font-family: Arial, sans-serif; font-size: 24px; margin: 0;">
+              RED PRODUCT
+            </h1>
+          </td>
+        </tr>
+
+        <!-- Corps -->
+        <tr>
+          <td align="center" style="padding: 40px 30px;">
+            <h2 style="color: #111827; font-family: Arial, sans-serif; font-size: 22px; margin: 0 0 20px 0;">
+              Réinitialisation du mot de passe 🔐
+            </h2>
+
+            <p style="color: #4b5563; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; margin: 0 0 15px 0;">
+              Bonjour <strong>${utilisateur.nom}</strong>,
+            </p>
+
+            <p style="color: #4b5563; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
+              Vous avez demandé à réinitialiser votre mot de passe. Cliquez sur le bouton ci-dessous pour en créer un nouveau.
+            </p>
+
+            <!-- Bouton -->
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" bgcolor="#333333" style="padding: 14px 28px;">
+                  <a href="${lien}" style="color: #ffffff; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; font-size: 16px;">
+                    Réinitialiser mon mot de passe
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Avertissement -->
+            <p style="color: #ef4444; font-family: Arial, sans-serif; font-size: 14px; margin: 25px 0 0 0;">
+              ⚠️ Ce lien expire dans <strong>10 minutes</strong>.
+            </p>
+
+            <p style="color: #9ca3af; font-family: Arial, sans-serif; font-size: 13px; margin: 20px 0 0 0;">
+              Si vous n'avez pas demandé de réinitialisation, ignorez cet email. Votre mot de passe restera inchangé.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td align="center" bgcolor="#f8f8f8" style="padding: 20px; border-top: 1px solid #eeeeee;">
+            <p style="color: #9ca3af; font-family: Arial, sans-serif; font-size: 12px; margin: 0;">
+              © 2026 RED PRODUCT. Tous droits réservés.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+  `
+});
 
     res.status(200).json({
       succes: true,
