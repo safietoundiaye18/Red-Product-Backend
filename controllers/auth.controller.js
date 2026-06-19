@@ -103,7 +103,7 @@ exports.inscrire = async (req, res) => {
 
     res.status(201).json({
       succes: true,
-      message: 'Inscription réussie ! Vérifiez votre email pour activer votre compte.'
+      message: 'Vérifiez votre email pour activer votre compte.'
     });
   } catch (erreur) {
     console.error('Erreur inscription:', erreur);
