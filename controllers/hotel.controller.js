@@ -9,10 +9,10 @@ exports.obtenirHotels = async (req, res) => {
     const search = req.query.search || '';
 
     // Si admin → voit tout, sinon → voit seulement ses hôtels
-    const filtres = { actif: true };
-    if (req.user.role !== 'admin') {
-      filtres.creePar = req.user.id;
-    }
+    const filtres = { 
+      actif: true,
+      creePar: req.user.id
+    };
 
     if (search) {
       filtres.$or = [
